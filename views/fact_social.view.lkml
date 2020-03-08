@@ -152,8 +152,7 @@ view: fact_social {
     sql: ${TABLE}."PAGE_FAN_COUNT" ;;
   }
 
-  measure: page_fan_count_current {
-    alias: [page_fan_count_today]
+  measure: page_fan_count_today {
     type: sum_distinct
     sql_distinct_key: ${TABLE}."ACCOUNT_ID";;
     sql: ${TABLE}."PAGE_FAN_COUNT_TODAY" ;;
@@ -165,8 +164,8 @@ view: fact_social {
 
   measure: page_fan_count_previous_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID";;
-    sql: ${TABLE}."PAGE_FAN_COUNT_TODAY" ;;
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql: ${TABLE}."PAGE_FAN_COUNT" ;;
     filters: {
       field: date_date
       value: "1 month ago for 1 day"
