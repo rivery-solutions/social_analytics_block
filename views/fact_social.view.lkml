@@ -152,6 +152,12 @@ view: fact_social {
     sql: ${TABLE}."PAGE_FAN_COUNT" ;;
   }
 
+  measure: page_fan_count_today {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
+    sql: ${TABLE}."PAGE_FAN_COUNT_TODAY" ;;
+  }
+
   measure: page_fan_removes {
     type: sum_distinct
     sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
