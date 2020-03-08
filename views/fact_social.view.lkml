@@ -172,6 +172,12 @@ view: fact_social {
     }
   }
 
+  measure: page_fan_monthly_change {
+    type: number
+    value_format_name: percent_2
+    sql: (${page_fan_count_today}-${page_fan_count_previous_month})/ NULLIF(${page_fan_count_previous_month},0) ;;
+  }
+
   measure: page_fan_removes {
     type: sum_distinct
     sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
