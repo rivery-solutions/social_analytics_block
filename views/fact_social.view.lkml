@@ -1,4 +1,5 @@
 view: fact_social {
+  label: "Social Performance"
   sql_table_name: "DWH"."FACT_SOCIAL"
     ;;
 
@@ -236,4 +237,6 @@ view: fact_social {
     type: count
     drill_fields: [account_name]
   }
+
+
 }
