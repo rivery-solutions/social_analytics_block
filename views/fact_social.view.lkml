@@ -12,18 +12,13 @@ view: fact_social {
     sql: ${TABLE}."ACCOUNT_NAME" ;;
   }
 
-  measure: avg_video_view_time {
-    type: number
-    sql: ${TABLE}."AVG_VIDEO_VIEW_TIME" ;;
-  }
-
   dimension: channel {
     type: string
     sql: ${TABLE}."CHANNEL" ;;
   }
 
   measure: comments {
-    type: number
+    type: sum
     sql: ${TABLE}."COMMENTS" ;;
   }
 
@@ -57,17 +52,18 @@ view: fact_social {
   }
 
   measure: engagement {
-    type: number
+    type: sum
     sql: ${TABLE}."ENGAGEMENT" ;;
   }
 
+#create this in Looker?
   measure: engagement_pct {
     type: number
     sql: ${TABLE}."ENGAGEMENT_PCT" ;;
   }
 
-  dimension: favorite_count {
-    type: number
+  measure: favorite_count {
+    type: sum
     sql: ${TABLE}."FAVORITE_COUNT" ;;
   }
 
@@ -82,7 +78,7 @@ view: fact_social {
   }
 
   measure: impressions {
-    type: number
+    type: sum
     sql: ${TABLE}."IMPRESSIONS" ;;
   }
 
@@ -97,12 +93,12 @@ view: fact_social {
   }
 
   measure: likes {
-    type: number
+    type: sum
     sql: ${TABLE}."LIKES" ;;
   }
 
   measure: link_clicks {
-    type: number
+    type: sum
     sql: ${TABLE}."LINK_CLICKS" ;;
   }
 
@@ -122,7 +118,7 @@ view: fact_social {
   }
 
   measure: other_clicks {
-    type: number
+    type: sum
     sql: ${TABLE}."OTHER_CLICKS" ;;
   }
 
@@ -132,42 +128,50 @@ view: fact_social {
   }
 
   measure: page_consumptions {
-    type: number
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
     sql: ${TABLE}."PAGE_CONSUMPTIONS" ;;
   }
 
   measure: page_engaged_users {
-    type: number
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
     sql: ${TABLE}."PAGE_ENGAGED_USERS" ;;
   }
 
   measure: page_fan_adds {
-    type: number
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
     sql: ${TABLE}."PAGE_FAN_ADDS" ;;
   }
 
   measure: page_fan_count {
-    type: number
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
     sql: ${TABLE}."PAGE_FAN_COUNT" ;;
   }
 
   measure: page_fan_removes {
-    type: number
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
     sql: ${TABLE}."PAGE_FAN_REMOVES" ;;
   }
 
   measure: page_impressions {
-    type: number
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
     sql: ${TABLE}."PAGE_IMPRESSIONS" ;;
   }
 
   measure: page_reach {
-    type: number
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
     sql: ${TABLE}."PAGE_REACH" ;;
   }
 
   measure: page_views {
-    type: number
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
     sql: ${TABLE}."PAGE_VIEWS" ;;
   }
 
@@ -177,7 +181,7 @@ view: fact_social {
   }
 
   measure: photo_view {
-    type: number
+    type: sum
     sql: ${TABLE}."PHOTO_VIEW" ;;
   }
 
@@ -187,22 +191,22 @@ view: fact_social {
   }
 
   measure: reach {
-    type: number
+    type: sum
     sql: ${TABLE}."REACH" ;;
   }
 
   measure: retweets {
-    type: number
+    type: sum
     sql: ${TABLE}."RETWEETS" ;;
   }
 
   measure: saved {
-    type: number
+    type: sum
     sql: ${TABLE}."SAVED" ;;
   }
 
   measure: shares {
-    type: number
+    type: sum
     sql: ${TABLE}."SHARES" ;;
   }
 
@@ -224,7 +228,7 @@ view: fact_social {
   }
 
   measure: video_views {
-    type: number
+    type: sum
     sql: ${TABLE}."VIDEO_VIEWS" ;;
   }
 
