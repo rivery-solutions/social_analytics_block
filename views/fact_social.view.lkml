@@ -269,6 +269,12 @@ view: fact_social {
       value: "1 month ago for 1 day"}
   }
 
+  measure: total_followers_monthly_change {
+    type: number
+    value_format_name: percent_2
+    sql: (${total_followers_ig_today}-${total_followers_ig_previous_month})/ NULLIF(${total_followers_ig_previous_month},0) ;;
+  }
+
   measure: video_views {
     type: sum
     sql: ${TABLE}."VIDEO_VIEWS" ;;
