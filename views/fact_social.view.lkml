@@ -232,6 +232,9 @@ view: fact_social {
     type: sum_distinct
     sql_distinct_key: ${TABLE}."ACCOUNT_ID" ;;
     sql: ${TABLE}."TOTAL_FOLLOWERS" ;;
+    filters: {
+      field: date_date
+      value: "today"}
   }
 
   measure: video_views {
