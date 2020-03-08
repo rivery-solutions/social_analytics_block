@@ -130,55 +130,55 @@ view: fact_social {
 
   measure: page_consumptions {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" || ${TABLE}."POST_ID" ;;
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
     sql: ${TABLE}."PAGE_CONSUMPTIONS" ;;
   }
 
   measure: page_engaged_users {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" || ${TABLE}."POST_ID" ;;
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
     sql: ${TABLE}."PAGE_ENGAGED_USERS" ;;
   }
 
   measure: page_fan_adds {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" || ${TABLE}."POST_ID" ;;
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
     sql: ${TABLE}."PAGE_FAN_ADDS" ;;
   }
 
   measure: page_fan_count {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" || ${TABLE}."POST_ID" ;;
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
     sql: ${TABLE}."PAGE_FAN_COUNT" ;;
   }
 
   measure: page_fan_count_today {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" || ${TABLE}."POST_ID";;
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID";;
     sql: ${TABLE}."PAGE_FAN_COUNT_TODAY" ;;
   }
 
   measure: page_fan_removes {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" || ${TABLE}."POST_ID" ;;
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
     sql: ${TABLE}."PAGE_FAN_REMOVES" ;;
   }
 
   measure: page_impressions {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" || ${TABLE}."POST_ID";;
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
     sql: ${TABLE}."PAGE_IMPRESSIONS" ;;
   }
 
   measure: page_reach {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" || ${TABLE}."POST_ID" ;;
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
     sql: ${TABLE}."PAGE_REACH" ;;
   }
 
   measure: page_views {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" || ${TABLE}."POST_ID" ;;
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
     sql: ${TABLE}."PAGE_VIEWS" ;;
   }
 
