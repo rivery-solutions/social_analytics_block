@@ -234,7 +234,7 @@ view: fact_social {
     sql: ${TABLE}."TOTAL_FOLLOWERS" ;;
     filters: {
       field: date_date
-      value: "today"}
+      value: "24 hours"}
   }
 
   measure: video_views {
