@@ -247,7 +247,7 @@ view: fact_social {
     sql: ${TABLE}."TITLE_CAPTION" ;;
   }
 
-  measure: total_followers_ig {
+  measure: total_followers_ig_today {
     alias: [total_followers]
     type: sum_distinct
     sql_distinct_key: ${TABLE}."ACCOUNT_ID" ;;
@@ -255,6 +255,18 @@ view: fact_social {
     filters: {
       field: date_date
       value: "24 hours"}
+  }
+
+  #Instagram API will only pull followers at time of pull. This will have to run with daily
+  #inserts so that historical follow counts can be tracked.
+
+  measure: total_followers_ig_previous_month {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" ;;
+    sql: ${TABLE}."TOTAL_FOLLOWERS" ;;
+    filters: {
+      field: date_date
+      value: "1 month ago for 1 day"}
   }
 
   measure: video_views {
