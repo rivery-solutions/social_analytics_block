@@ -80,7 +80,7 @@ view: social_performance {
 
   measure: impressions_all_channels {
     type: number
-    sql: case when ${channel} = "Twitter" then ${impressions} else ${page_impressions} end;;
+    sql: case when ${channel} = 'Twitter' then ${impressions} else ${page_impressions} end;;
   }
 
   dimension: is_hidden {
