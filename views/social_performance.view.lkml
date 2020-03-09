@@ -522,5 +522,33 @@ view: social_performance {
     drill_fields: [account_name]
   }
 
+  measure: count_distinct_posts {
+    type: count_distinct
+    sql: ${TABLE}."POST_ID" ;;
+  }
+
+  measure: count_distinct_posts_current_month {
+    type: count_distinct
+    sql: ${TABLE}."POST_ID" ;;
+    filters: {
+      field: created_date
+      value: "30 days"
+    }
+  }
+
+  measure: count_distinct_posts_previous_month {
+    type: count_distinct
+    sql: ${TABLE}."POST_ID" ;;
+    filters: {
+      field: created_date
+      value: "60 days ago for 30 days"
+    }
+  }
+
+  measure: count_distinct_posts_monthly_change {
+    type: number
+    value_format_name: percent_2
+    sql: (${count_distinct_posts_current_month}-${count_distinct_posts_previous_month})/ NULLIF(${count_distinct_posts_previous_month},0) ;;
+  }
 
 }
