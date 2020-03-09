@@ -365,6 +365,74 @@ view: social_performance {
     sql: ${TABLE}."PAGE_REACH" ;;
   }
 
+  measure: page_reach_instagram_current_month {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql: ${TABLE}."PAGE_REACH" ;;
+    filters: {
+      field: channel
+      value: "Instagram"
+    }
+    filters: {
+      field: date_date
+      value: "1 month"
+    }
+  }
+
+  measure: page_reach_instagram_previous_month {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql: ${TABLE}."PAGE_REACH" ;;
+    filters: {
+      field: channel
+      value: "Instagram"
+    }
+    filters: {
+      field: date_date
+      value: "2 months ago for 1 month"
+    }
+  }
+
+  measure: page_reach_instagram_monthly_change {
+    type: number
+    value_format_name: percent_2
+    sql: (${page_reach_instagram_current_month}-${page_reach_instagram_previous_month})/ NULLIF(${page_reach_instagram_previous_month},0) ;;
+  }
+
+  measure: page_reach_facebook_current_month {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql: ${TABLE}."PAGE_REACH" ;;
+    filters: {
+      field: channel
+      value: "Facebook"
+    }
+    filters: {
+      field: date_date
+      value: "1 month"
+    }
+  }
+
+  measure: page_reach_facebook_previous_month {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql: ${TABLE}."PAGE_REACH" ;;
+    filters: {
+      field: channel
+      value: "Facebook"
+    }
+    filters: {
+      field: date_date
+      value: "2 months ago for 1 month"
+    }
+  }
+
+  measure: page_reach_facebook_monthly_change {
+    type: number
+    value_format_name: percent_2
+    sql: (${page_reach_facebook_current_month}-${page_reach_facebook_previous_month})/ NULLIF(${page_reach_facebook_previous_month},0) ;;
+  }
+
   measure: page_views {
     type: sum_distinct
     sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
