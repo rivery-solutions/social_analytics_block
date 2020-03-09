@@ -78,10 +78,40 @@ view: social_performance {
     sql: ${TABLE}."IMPRESSIONS" ;;
   }
 
-  measure: impressions_all_channels {
-    type: number
-    sql: case when ${channel} = 'Twitter' then ${impressions} else ${page_impressions} end;;
+  measure: impressions_twitter_current_month {
+    type: sum
+    sql: ${TABLE}."IMPRESSIONS" ;;
+    filters: {
+      field: channel
+      value: "Twitter"
+    }
+    filters: {
+      field: date_date
+      value: "1 month"
+    }
   }
+
+  measure: impressions_twitter_previous_month {
+    type: sum
+    sql: ${TABLE}."IMPRESSIONS" ;;
+    filters: {
+      field: channel
+      value: "Twitter"
+    }
+    filters: {
+      field: date_date
+      value: "2 months ago for 1 month"
+    }
+  }
+
+
+  measure: impressions_twitter_monthly_change {
+    type: number
+    value_format_name: percent_2
+    sql: (${impressions_twitter_current_month}-${impressions_twitter_previous_month})
+      / NULLIF(${impressions_twitter_previous_month},0) ;;
+  }
+
 
   dimension: is_hidden {
     type: yesno
@@ -146,7 +176,7 @@ view: social_performance {
     sql: ${TABLE}."PAGE_ENGAGED_USERS" ;;
     filters: {
       field: date_date
-      value: "1 month ago"
+      value: "1 month"
     }
   }
 
@@ -240,6 +270,75 @@ view: social_performance {
     sql: ${TABLE}."PAGE_IMPRESSIONS";;
   }
 
+  measure: page_impressions_facebook_current_month {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql: ${TABLE}."PAGE_IMPRESSIONS";;
+    filters: {
+      field: channel
+      value: "Facebook"
+    }
+    filters: {
+      field: date_date
+      value: "1 month"
+    }
+  }
+
+  measure: page_impressions_facebook_previous_month {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql: ${TABLE}."PAGE_IMPRESSIONS";;
+    filters: {
+      field: channel
+      value: "Facebook"
+    }
+    filters: {
+      field: date_date
+      value: "2 months ago for 1 month"
+    }
+  }
+
+  measure: page_impressions_facebook_monthly_change {
+    type: number
+    value_format_name: percent_2
+    sql: (${page_impressions_facebook_current_month}-${page_impressions_facebook_previous_month})/ NULLIF(${page_impressions_facebook_previous_month},0) ;;
+  }
+
+  measure: page_impressions_instagram {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql: ${TABLE}."PAGE_IMPRESSIONS";;
+    filters: {
+      field: channel
+      value: "Instagram"
+    }
+  }
+
+  measure: page_impressions_instagram_current_month {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql: ${TABLE}."PAGE_IMPRESSIONS";;
+    filters: {
+      field: date_date
+      value: "1 month"
+    }
+  }
+
+  measure: page_impressions_instagram_previous_month {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql: ${TABLE}."PAGE_IMPRESSIONS";;
+    filters: {
+      field: date_date
+      value: "2 months ago for 1 month"
+    }
+  }
+
+  measure: page_impressions_instagram_monthly_change {
+    type: number
+    value_format_name: percent_2
+    sql: (${page_impressions_instagram_current_month}-${page_impressions_instagram_previous_month})/ NULLIF(${page_impressions_instagram_previous_month},0) ;;
+  }
 
   measure: page_impressions_current_month {
     type: sum_distinct
