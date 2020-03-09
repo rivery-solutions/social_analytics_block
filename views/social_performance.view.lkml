@@ -304,7 +304,7 @@ view: social_performance {
     sql: (${page_impressions_facebook_current_month}-${page_impressions_facebook_previous_month})/ NULLIF(${page_impressions_facebook_previous_month},0) ;;
   }
 
-  measure: page_impressions_instagram {
+  measure: page_impressions_instagram_current_month {
     type: sum_distinct
     sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
     sql: ${TABLE}."PAGE_IMPRESSIONS";;
@@ -312,22 +312,21 @@ view: social_performance {
       field: channel
       value: "Instagram"
     }
-  }
-
-  measure: page_impressions_instagram_current_month {
-    type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_IMPRESSIONS";;
     filters: {
       field: date_date
       value: "1 month"
     }
   }
 
+
   measure: page_impressions_instagram_previous_month {
     type: sum_distinct
     sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
     sql: ${TABLE}."PAGE_IMPRESSIONS";;
+    filters: {
+      field: channel
+      value: "Instagram"
+    }
     filters: {
       field: date_date
       value: "2 months ago for 1 month"
