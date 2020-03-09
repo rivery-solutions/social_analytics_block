@@ -175,13 +175,13 @@ view: fact_social {
   measure: page_engagement_rate_current_month {
     type: number
     value_format_name: percent_2
-    sql:${page_engaged_users_current_month}/nullif(${page_impressions_current_month});;
+    sql:${page_engaged_users_current_month}/nullif(${page_impressions_current_month},0);;
   }
 
   measure: page_engagement_rate_previous_month {
     type: number
     value_format_name: percent_2
-    sql:${page_engaged_users_previous_month}/nullif(${page_impressions_previous_month});;
+    sql:${page_engaged_users_previous_month}/nullif(${page_impressions_previous_month},0);;
   }
 
   measure: page_engagement_rate_monthly_change {
