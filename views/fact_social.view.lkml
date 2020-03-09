@@ -166,6 +166,13 @@ view: fact_social {
     }
   }
 
+  measure: page_engaged_users_monthly_change {
+    type: number
+    value_format_name: percent_2
+    sql: (${page_engaged_users_current_month}-${page_engaged_users_previous_month})
+    / NULLIF(${page_engaged_users_previous_month},0) ;;
+  }
+
   measure: page_engagement_rate {
     type: number
     value_format_name: percent_2
