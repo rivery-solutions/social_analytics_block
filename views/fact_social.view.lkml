@@ -57,6 +57,12 @@ view: fact_social {
     sql: ${TABLE}."ENGAGEMENT" ;;
   }
 
+  measure: engagement_rate {
+    type: number
+    value_format_name: percent_2
+    sql: ${engagement}/${impressions} ;;
+  }
+
 #create this in Looker?
   measure: engagement_pct {
     type: number
@@ -140,6 +146,49 @@ view: fact_social {
     sql: ${TABLE}."PAGE_ENGAGED_USERS" ;;
   }
 
+  measure: page_engaged_users_current_month {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql: ${TABLE}."PAGE_ENGAGED_USERS" ;;
+    filters: {
+      field: date_date
+      value: "1 month ago"
+    }
+  }
+
+  measure: page_engaged_users_previous_month {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql: ${TABLE}."PAGE_ENGAGED_USERS" ;;
+    filters: {
+      field: date_date
+      value: "2 months ago for 1 month"
+    }
+  }
+
+  measure: page_engagement_rate {
+    type: number
+    value_format_name: percent_2
+    sql:${page_engaged_users}/${page_impressions} ;;
+  }
+
+  measure: page_engagement_rate_current_month {
+    type: number
+    value_format_name: percent_2
+    sql:${page_engaged_users_current_month}/${page_impressions_current_month};;
+  }
+
+  measure: page_engagement_rate_previous_month {
+    type: number
+    value_format_name: percent_2
+    sql:${page_engaged_users_previous_month}/${page_impressions_previous_month};;
+  }
+
+  measure: page_engagement_rate_monthly_change {
+    type:  number
+    sql: ${page_engagement_rate_current_month} - ${page_engagement_rate_previous_month} ;;
+  }
+
   measure: page_fan_adds {
     type: sum_distinct
     sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
@@ -188,6 +237,26 @@ view: fact_social {
     type: sum_distinct
     sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
     sql: ${TABLE}."PAGE_IMPRESSIONS" ;;
+  }
+
+  measure: page_impressions_current_month {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql: ${TABLE}."PAGE_IMPRESSIONS" ;;
+    filters: {
+      field: date_date
+      value: "1 month ago"
+    }
+  }
+
+  measure: page_impressions_previous_month {
+    type: sum_distinct
+    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql: ${TABLE}."PAGE_IMPRESSIONS" ;;
+    filters: {
+      field: date_date
+      value: "2 months ago for 1 month"
+    }
   }
 
   measure: page_reach {
