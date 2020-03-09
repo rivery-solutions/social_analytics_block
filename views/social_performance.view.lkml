@@ -319,7 +319,7 @@ view: social_performance {
     sql: ${TABLE}."TOTAL_FOLLOWERS" ;;
     filters: {
       field: date_date
-      value: "24 hours"}
+      value: "1 day ago"}
   }
 
   #Instagram API will only pull followers at time of pull. This will have to run with daily
