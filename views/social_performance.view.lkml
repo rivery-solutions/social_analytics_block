@@ -78,6 +78,11 @@ view: social_performance {
     sql: ${TABLE}."IMPRESSIONS" ;;
   }
 
+  measure: impressions_all_channels {
+    type: number
+    sql: case when ${channel} = "Twitter" then ${impressions} else ${page_impressions} end;;
+  }
+
   dimension: is_hidden {
     type: yesno
     sql: ${TABLE}."IS_HIDDEN" ;;
@@ -232,8 +237,9 @@ view: social_performance {
   measure: page_impressions {
     type: sum_distinct
     sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_IMPRESSIONS" ;;
+    sql: ${TABLE}."PAGE_IMPRESSIONS";;
   }
+
 
   measure: page_impressions_current_month {
     type: sum_distinct
