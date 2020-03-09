@@ -87,7 +87,7 @@ view: social_performance {
     }
     filters: {
       field: date_date
-      value: "1 month"
+      value: "30 days"
     }
   }
 
@@ -100,7 +100,7 @@ view: social_performance {
     }
     filters: {
       field: date_date
-      value: "2 months ago for 1 month"
+      value: "60 days ago for 30 days"
     }
   }
 
@@ -176,7 +176,7 @@ view: social_performance {
     sql: ${TABLE}."PAGE_ENGAGED_USERS" ;;
     filters: {
       field: date_date
-      value: "1 month"
+      value: "30 days"
     }
   }
 
@@ -186,7 +186,7 @@ view: social_performance {
     sql: ${TABLE}."PAGE_ENGAGED_USERS" ;;
     filters: {
       field: date_date
-      value: "2 months ago for 1 month"
+      value: "60 days ago for 30 days"
     }
   }
 
@@ -280,7 +280,7 @@ view: social_performance {
     }
     filters: {
       field: date_date
-      value: "1 month"
+      value: "30 days"
     }
   }
 
@@ -294,7 +294,7 @@ view: social_performance {
     }
     filters: {
       field: date_date
-      value: "2 months ago for 1 month"
+      value: "60 days ago for 30 days"
     }
   }
 
@@ -314,7 +314,7 @@ view: social_performance {
     }
     filters: {
       field: date_date
-      value: "1 month"
+      value: "30 days"
     }
   }
 
@@ -329,7 +329,7 @@ view: social_performance {
     }
     filters: {
       field: date_date
-      value: "2 months ago for 1 month"
+      value: "60 days ago for 30 days"
     }
   }
 
@@ -345,7 +345,7 @@ view: social_performance {
     sql: ${TABLE}."PAGE_IMPRESSIONS" ;;
     filters: {
       field: date_date
-      value: "1 month ago"
+      value: "30 days"
     }
   }
 
@@ -355,7 +355,7 @@ view: social_performance {
     sql: ${TABLE}."PAGE_IMPRESSIONS" ;;
     filters: {
       field: date_date
-      value: "2 months ago for 1 month"
+      value: "60 days ago for 30 days"
     }
   }
 
@@ -375,7 +375,7 @@ view: social_performance {
     }
     filters: {
       field: date_date
-      value: "1 month"
+      value: "30 days"
     }
   }
 
@@ -389,7 +389,7 @@ view: social_performance {
     }
     filters: {
       field: date_date
-      value: "2 months ago for 1 month"
+      value: "60 days ago for 30 days"
     }
   }
 
@@ -409,7 +409,7 @@ view: social_performance {
     }
     filters: {
       field: date_date
-      value: "1 month"
+      value: "30 days"
     }
   }
 
@@ -423,7 +423,7 @@ view: social_performance {
     }
     filters: {
       field: date_date
-      value: "2 months ago for 1 month"
+      value: "60 days ago for 30 days"
     }
   }
 
