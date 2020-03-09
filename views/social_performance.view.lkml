@@ -312,7 +312,7 @@ view: social_performance {
     sql: ${TABLE}."TITLE_CAPTION" ;;
   }
 
-  measure: total_followers_ig_today {
+  measure: total_followers_today {
     alias: [total_followers]
     type: sum_distinct
     sql_distinct_key: ${TABLE}."ACCOUNT_ID" ;;
@@ -325,7 +325,7 @@ view: social_performance {
   #Instagram API will only pull followers at time of pull. This will have to run with daily
   #inserts so that historical follow counts can be tracked.
 
-  measure: total_followers_ig_previous_month {
+  measure: total_followers_previous_month {
     type: sum_distinct
     sql_distinct_key: ${TABLE}."ACCOUNT_ID" ;;
     sql: ${TABLE}."TOTAL_FOLLOWERS" ;;
@@ -337,7 +337,7 @@ view: social_performance {
   measure: total_followers_monthly_change {
     type: number
     value_format_name: percent_2
-    sql: (${total_followers_ig_today}-${total_followers_ig_previous_month})/ NULLIF(${total_followers_ig_previous_month},0) ;;
+    sql: (${total_followers_today}-${total_followers_previous_month})/ NULLIF(${total_followers_previous_month},0) ;;
   }
 
   measure: video_views {
