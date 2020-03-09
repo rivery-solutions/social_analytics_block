@@ -10,4 +10,4 @@ datagroup: social_analytics_default_datagroup {
 
 persist_with: social_analytics_default_datagroup
 
-explore: fact_social {}
+explore: social_performance {}

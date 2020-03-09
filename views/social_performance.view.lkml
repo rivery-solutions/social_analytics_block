@@ -1,4 +1,4 @@
-view: fact_social {
+view: social_performance {
   label: "Social Performance"
   sql_table_name: "DWH"."FACT_SOCIAL"
     ;;
@@ -63,21 +63,10 @@ view: fact_social {
     sql: ${engagement}/${impressions} ;;
   }
 
-#create this in Looker?
-  measure: engagement_pct {
-    type: number
-    sql: ${TABLE}."ENGAGEMENT_PCT" ;;
-  }
-
   measure: favorite_count {
     type: sum
     sql: ${TABLE}."FAVORITE_COUNT" ;;
   }
-
-  #dimension: follows {
-  #  type: number
-  #  sql: ${TABLE}."FOLLOWS" ;;
-  #}
 
   dimension: ig_id {
     type: string
