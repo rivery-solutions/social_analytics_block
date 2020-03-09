@@ -68,6 +68,32 @@ view: social_performance {
     sql: ${TABLE}."FAVORITE_COUNT" ;;
   }
 
+
+  measure: favorites_current_month {
+    type: sum
+    sql: ${TABLE}."FAVORITE_COUNT" ;;
+    filters: {
+      field: created_date
+      value: "30 days"
+    }
+  }
+
+  measure: favorites_previous_month {
+    type: sum
+    sql: ${TABLE}."FAVORITE_COUNT" ;;
+    filters: {
+      field: created_date
+      value: "60 days ago for 30 days"
+    }
+  }
+
+  measure: favorites_monthly_change {
+    type: number
+    value_format_name: percent_2
+    sql: (${favorites_current_month}-${favorites_previous_month})/ NULLIF(${favorites_previous_month},0) ;;
+  }
+
+
   dimension: ig_id {
     type: string
     sql: ${TABLE}."IG_ID" ;;
@@ -464,6 +490,30 @@ view: social_performance {
     sql: ${TABLE}."RETWEETS" ;;
   }
 
+  measure: retweets_current_month {
+    type: sum
+    sql: ${TABLE}."RETWEETS" ;;
+    filters: {
+      field: created_date
+      value: "30 days"
+    }
+  }
+
+  measure: retweets_previous_month {
+    type: sum
+    sql: ${TABLE}."RETWEETS" ;;
+    filters: {
+      field: created_date
+      value: "60 days ago for 30 days"
+    }
+  }
+
+  measure: retweets_monthly_change {
+    type: number
+    value_format_name: percent_2
+    sql: (${retweets_current_month}-${retweets_previous_month})/ NULLIF(${retweets_previous_month},0) ;;
+  }
+
   measure: saved {
     type: sum
     sql: ${TABLE}."SAVED" ;;
@@ -534,6 +584,70 @@ view: social_performance {
       field: created_date
       value: "30 days"
     }
+  }
+
+  measure: count_distinct_posts_twitter_current_month {
+    type: count_distinct
+    sql: ${TABLE}."POST_ID" ;;
+    filters: {
+      field: created_date
+      value: "30 days"
+    }
+    filters: {
+      field: channel
+      value: "Twitter"
+    }
+  }
+
+  measure: count_distinct_posts_twitter_previous_month {
+    type: count_distinct
+    sql: ${TABLE}."POST_ID" ;;
+    filters: {
+      field: created_date
+      value: "60 days ago for 30 days"
+    }
+    filters: {
+      field: channel
+      value: "Twitter"
+    }
+  }
+
+  measure: count_distinct_posts_twitter_monthly_change {
+    type: number
+    value_format_name: percent_2
+    sql: (${count_distinct_posts_twitter_current_month}-${count_distinct_posts_twitter_previous_month})/ NULLIF(${count_distinct_posts_twitter_previous_month},0) ;;
+  }
+
+  measure: count_distinct_posts_instagram_current_month {
+    type: count_distinct
+    sql: ${TABLE}."POST_ID" ;;
+    filters: {
+      field: created_date
+      value: "30 days"
+    }
+    filters: {
+      field: channel
+      value: "Instagram"
+    }
+  }
+
+  measure: count_distinct_posts_instagram_previous_month {
+    type: count_distinct
+    sql: ${TABLE}."POST_ID" ;;
+    filters: {
+      field: created_date
+      value: "60 days ago for 30 days"
+    }
+    filters: {
+      field: channel
+      value: "Instagram"
+    }
+  }
+
+  measure: count_distinct_posts_instagram_monthly_change {
+    type: number
+    value_format_name: percent_2
+    sql: (${count_distinct_posts_instagram_current_month}-${count_distinct_posts_instagram_previous_month})/ NULLIF(${count_distinct_posts_instagram_previous_month},0) ;;
   }
 
   measure: count_distinct_posts_previous_month {
