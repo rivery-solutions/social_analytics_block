@@ -65,15 +65,20 @@ view: social_performance {
     sql: ${engagement}/${impressions} ;;
   }
 
-  measure: favorite_count {
+  measure: total_favorite_count {
     type: sum
+    sql: ${favorite_count} ;;
+  }
+
+  dimension: favorite_count {
+    type: number
     sql: ${TABLE}."FAVORITE_COUNT" ;;
   }
 
 
   measure: favorites_current_month {
     type: sum
-    sql: ${TABLE}."FAVORITE_COUNT" ;;
+    sql: ${favorite_count} ;;
     filters: {
       field: created_date
       value: "30 days"
@@ -82,7 +87,7 @@ view: social_performance {
 
   measure: favorites_previous_month {
     type: sum
-    sql: ${TABLE}."FAVORITE_COUNT" ;;
+    sql: ${favorite_count} ;;
     filters: {
       field: created_date
       value: "60 days ago for 30 days"
