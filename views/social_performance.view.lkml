@@ -3,6 +3,8 @@ view: social_performance {
   sql_table_name: "DWH"."FACT_SOCIAL"
     ;;
 
+# Dimensions
+
   dimension: account_id {
     type: string
     sql: ${TABLE}."ACCOUNT_ID" ;;
@@ -664,5 +666,21 @@ view: social_performance {
     value_format_name: percent_2
     sql: (${count_distinct_posts_current_month}-${count_distinct_posts_previous_month})/ NULLIF(${count_distinct_posts_previous_month},0) ;;
   }
+
+# Measures
+
+  # All channels
+
+  # Facebook and Instagram
+
+  # Twitter Only
+
+
+# Sets
+
+  set: dimension_drill {
+    fields: [channel, account_name, media_type]
+  }
+
 
 }
