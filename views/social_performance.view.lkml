@@ -20,9 +20,14 @@ view: social_performance {
     sql: ${TABLE}."CHANNEL" ;;
   }
 
-  measure: comments {
+  dimension: comments {
+    type: number
+    sql: ${TABLE}."CHANNEL" ;;
+  }
+
+  measure: total_comments {
     type: sum
-    sql: ${TABLE}."COMMENTS" ;;
+    sql: ${comments} ;;
   }
 
   dimension_group: created {
@@ -54,27 +59,36 @@ view: social_performance {
     sql: ${TABLE}."DATE" ;;
   }
 
-  measure: engagement {
-    type: sum
+
+  dimension: engagement {
+    type: number
     sql: ${TABLE}."ENGAGEMENT" ;;
+    hidden: yes
+  }
+
+  measure: post_engagement {
+    type: sum
+    sql: ${engagement} ;;
   }
 
   measure: engagement_rate {
     type: number
     value_format_name: percent_2
-    sql: ${engagement}/${impressions} ;;
+    sql: ${post_engagement}/${impressions} ;;
   }
 
-  measure: total_favorite_count {
-    type: sum
-    sql: ${favorite_count} ;;
-  }
+
 
   dimension: favorite_count {
     type: number
     sql: ${TABLE}."FAVORITE_COUNT" ;;
+    hidden: yes
   }
 
+  measure: page_favorite_count {
+    type: sum
+    sql: ${favorite_count} ;;
+  }
 
   measure: favorites_current_month {
     type: sum
@@ -106,14 +120,20 @@ view: social_performance {
     sql: ${TABLE}."IG_ID" ;;
   }
 
-  measure: impressions {
+  dimension: impressions {
+  type: number
+  sql: ${TABLE}."IMPRESSIONS"  ;;
+  hidden: yes
+  }
+
+  measure: post_impressions {
     type: sum
-    sql: ${TABLE}."IMPRESSIONS" ;;
+    sql: ${impressions} ;;
   }
 
   measure: impressions_twitter_current_month {
     type: sum
-    sql: ${TABLE}."IMPRESSIONS" ;;
+    sql: ${impressions} ;;
     filters: {
       field: channel
       value: "Twitter"
@@ -126,7 +146,7 @@ view: social_performance {
 
   measure: impressions_twitter_previous_month {
     type: sum
-    sql: ${TABLE}."IMPRESSIONS" ;;
+    sql: ${impressions} ;;
     filters: {
       field: channel
       value: "Twitter"
@@ -156,13 +176,13 @@ view: social_performance {
     sql: ${TABLE}."IS_PUBLISHED" ;;
   }
 
-  measure: likes {
-    type: sum
+  dimension: likes {
+    type: number
     sql: ${TABLE}."LIKES" ;;
   }
 
-  measure: link_clicks {
-    type: sum
+  dimension: link_clicks {
+    type: number
     sql: ${TABLE}."LINK_CLICKS" ;;
   }
 
@@ -181,8 +201,8 @@ view: social_performance {
     sql: ${TABLE}."MESSAGE" ;;
   }
 
-  measure: other_clicks {
-    type: sum
+  dimension: other_clicks {
+    type: number
     sql: ${TABLE}."OTHER_CLICKS" ;;
   }
 
@@ -191,22 +211,34 @@ view: social_performance {
     sql: ${TABLE}."OWNER_ID" ;;
   }
 
-  measure: page_consumptions {
-    type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+  dimension: page_consumptions {
+    type: number
     sql: ${TABLE}."PAGE_CONSUMPTIONS" ;;
+    hidden: yes
   }
 
-  measure: page_engaged_users {
+  measure: page_consumptions_daily {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql_distinct_key: ${account_id} || ${date_date};;
+    sql: ${page_consumptions} ;;
+  }
+
+  dimension: page_engaged_users {
+    type: number
     sql: ${TABLE}."PAGE_ENGAGED_USERS" ;;
+    hidden: yes
+  }
+
+  measure: page_engaged_users_daily {
+    type: sum_distinct
+    sql_distinct_key: ${account_id} || ${date_date};;
+    sql: ${page_engaged_users} ;;
   }
 
   measure: page_engaged_users_current_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_ENGAGED_USERS" ;;
+    sql_distinct_key: ${account_id} || ${date_date};;
+    sql: ${page_engaged_users} ;;
     filters: {
       field: date_date
       value: "30 days"
@@ -215,8 +247,8 @@ view: social_performance {
 
   measure: page_engaged_users_previous_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_ENGAGED_USERS" ;;
+    sql_distinct_key: ${account_id} || ${date_date};;
+    sql: ${page_engaged_users} ;;
     filters: {
       field: date_date
       value: "60 days ago for 30 days"
@@ -253,22 +285,41 @@ view: social_performance {
     sql: ${page_engagement_rate_current_month} - ${page_engagement_rate_previous_month} ;;
   }
 
-  measure: page_fan_adds {
-    type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
+  dimension: page_fan_adds {
+    type: number
     sql: ${TABLE}."PAGE_FAN_ADDS" ;;
+    hidden: yes
   }
 
-  measure: page_fan_count {
+  measure: page_fan_adds_daily {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_FAN_COUNT" ;;
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_fan_adds} ;;
   }
 
-  measure: page_fan_count_today {
+  dimension: page_fan_count {
+    type: number
+    sql:  ${TABLE}."PAGE_FAN_COUNT" ;;
+    hidden: yes
+  }
+
+  measure: page_fan_count_daily {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID";;
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_fan_count} ;;
+  }
+
+
+  dimension: page_fan_count_today {
+    type:  number
     sql: ${TABLE}."PAGE_FAN_COUNT_TODAY" ;;
+    hidden: yes
+  }
+
+  measure: page_fan_count_current {
+    type: sum_distinct
+    sql_distinct_key: ${account_id}
+    sql: ${page_fan_count_today} ;;
     filters: {
       field: date_date
       value: "24 hours"
@@ -277,8 +328,8 @@ view: social_performance {
 
   measure: page_fan_count_previous_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_FAN_COUNT" ;;
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_fan_count} ;;
     filters: {
       field: date_date
       value: "1 month ago for 1 day"
@@ -288,25 +339,37 @@ view: social_performance {
   measure: page_fan_monthly_change {
     type: number
     value_format_name: percent_2
-    sql: (${page_fan_count_today}-${page_fan_count_previous_month})/ NULLIF(${page_fan_count_previous_month},0) ;;
+    sql: (${page_fan_count_current}-${page_fan_count_previous_month})/ NULLIF(${page_fan_count_previous_month},0) ;;
   }
 
-  measure: page_fan_removes {
-    type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE" ;;
+  dimension: page_fan_removes {
+    type: number
     sql: ${TABLE}."PAGE_FAN_REMOVES" ;;
+    hidden: yes
   }
 
-  measure: page_impressions {
+  measure: page_fan_removes_daily {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_fan_removes} ;;
+  }
+
+  dimension: page_impressions {
+    type: number
     sql: ${TABLE}."PAGE_IMPRESSIONS";;
+    hidden: yes
+  }
+
+  measure: page_impressions_daily {
+    type: sum_distinct
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_impressions};;
   }
 
   measure: page_impressions_facebook_current_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_IMPRESSIONS";;
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_impressions};;
     filters: {
       field: channel
       value: "Facebook"
@@ -319,8 +382,8 @@ view: social_performance {
 
   measure: page_impressions_facebook_previous_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_IMPRESSIONS";;
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_impressions};;
     filters: {
       field: channel
       value: "Facebook"
@@ -339,8 +402,8 @@ view: social_performance {
 
   measure: page_impressions_instagram_current_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_IMPRESSIONS";;
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_impressions};;
     filters: {
       field: channel
       value: "Instagram"
@@ -354,8 +417,8 @@ view: social_performance {
 
   measure: page_impressions_instagram_previous_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_IMPRESSIONS";;
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_impressions};;
     filters: {
       field: channel
       value: "Instagram"
@@ -374,8 +437,8 @@ view: social_performance {
 
   measure: page_impressions_current_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_IMPRESSIONS" ;;
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_impressions};;
     filters: {
       field: date_date
       value: "30 days"
@@ -384,24 +447,30 @@ view: social_performance {
 
   measure: page_impressions_previous_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_IMPRESSIONS" ;;
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_impressions};;
     filters: {
       field: date_date
       value: "60 days ago for 30 days"
     }
   }
 
-  measure: page_reach {
-    type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+  dimension: page_reach {
+    type: number
     sql: ${TABLE}."PAGE_REACH" ;;
+    hidden: yes
+  }
+
+  measure: page_reach_daily {
+    type: sum_distinct
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_reach} ;;
   }
 
   measure: page_reach_instagram_current_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_REACH" ;;
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_reach} ;;
     filters: {
       field: channel
       value: "Instagram"
@@ -414,8 +483,8 @@ view: social_performance {
 
   measure: page_reach_instagram_previous_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_REACH" ;;
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_reach} ;;
     filters: {
       field: channel
       value: "Instagram"
@@ -434,8 +503,8 @@ view: social_performance {
 
   measure: page_reach_facebook_current_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_REACH" ;;
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_reach} ;;
     filters: {
       field: channel
       value: "Facebook"
@@ -448,8 +517,8 @@ view: social_performance {
 
   measure: page_reach_facebook_previous_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
-    sql: ${TABLE}."PAGE_REACH" ;;
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_reach} ;;
     filters: {
       field: channel
       value: "Facebook"
@@ -466,10 +535,16 @@ view: social_performance {
     sql: (${page_reach_facebook_current_month}-${page_reach_facebook_previous_month})/ NULLIF(${page_reach_facebook_previous_month},0) ;;
   }
 
-  measure: page_views {
-    type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" || ${TABLE}."DATE";;
+  dimension: page_views{
+    type: number
     sql: ${TABLE}."PAGE_VIEWS" ;;
+    hidden: yes
+  }
+
+  measure: page_views_daily {
+    type: sum_distinct
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_views} ;;
   }
 
   dimension: permalink {
@@ -477,8 +552,10 @@ view: social_performance {
     sql: ${TABLE}."PERMALINK" ;;
   }
 
-  measure: photo_view {
-    type: sum
+
+
+  dimension: photo_view {
+    type: number
     sql: ${TABLE}."PHOTO_VIEW" ;;
   }
 
@@ -487,19 +564,27 @@ view: social_performance {
     sql: ${TABLE}."POST_ID" ;;
   }
 
-  measure: reach {
-    type: sum
+
+  dimension: reach {
+    type: number
     sql: ${TABLE}."REACH" ;;
+    hidden: yes
   }
 
-  measure: retweets {
+# only take most recent reach for each post id?
+  measure: post_reach {
     type: sum
+    sql: ${reach} ;;
+  }
+
+  dimension: retweets {
+    type: number
     sql: ${TABLE}."RETWEETS" ;;
   }
 
   measure: retweets_current_month {
     type: sum
-    sql: ${TABLE}."RETWEETS" ;;
+    sql: ${retweets} ;;
     filters: {
       field: created_date
       value: "30 days"
@@ -508,7 +593,7 @@ view: social_performance {
 
   measure: retweets_previous_month {
     type: sum
-    sql: ${TABLE}."RETWEETS" ;;
+    sql: ${retweets} ;;
     filters: {
       field: created_date
       value: "60 days ago for 30 days"
@@ -521,13 +606,13 @@ view: social_performance {
     sql: (${retweets_current_month}-${retweets_previous_month})/ NULLIF(${retweets_previous_month},0) ;;
   }
 
-  measure: saved {
-    type: sum
+  dimension: saved {
+    type: number
     sql: ${TABLE}."SAVED" ;;
   }
 
-  measure: shares {
-    type: sum
+  dimension: shares {
+    type: number
     sql: ${TABLE}."SHARES" ;;
   }
 
@@ -541,11 +626,16 @@ view: social_performance {
     sql: ${TABLE}."TITLE_CAPTION" ;;
   }
 
-  measure: total_followers_today {
-    alias: [total_followers]
-    type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" ;;
+  dimension: total_followers {
+    type: number
     sql: ${TABLE}."TOTAL_FOLLOWERS" ;;
+    hidden: yes
+  }
+
+  measure: total_followers_today {
+    type: sum_distinct
+    sql_distinct_key: ${account_id}
+    sql: ${total_followers} ;;
     filters: {
       field: date_date
       value: "1 day ago"}
@@ -556,8 +646,8 @@ view: social_performance {
 
   measure: total_followers_previous_month {
     type: sum_distinct
-    sql_distinct_key: ${TABLE}."ACCOUNT_ID" ;;
-    sql: ${TABLE}."TOTAL_FOLLOWERS" ;;
+    sql_distinct_key: ${account_id}
+    sql: ${total_followers} ;;
     filters: {
       field: date_date
       value: "1 month ago for 1 day"}
@@ -569,8 +659,8 @@ view: social_performance {
     sql: (${total_followers_today}-${total_followers_previous_month})/ NULLIF(${total_followers_previous_month},0) ;;
   }
 
-  measure: video_views {
-    type: sum
+  dimension: video_views {
+    type: number
     sql: ${TABLE}."VIDEO_VIEWS" ;;
   }
 
@@ -581,12 +671,12 @@ view: social_performance {
 
   measure: count_distinct_posts {
     type: count_distinct
-    sql: ${TABLE}."POST_ID" ;;
+    sql: ${post_id} ;;
   }
 
   measure: count_distinct_posts_current_month {
     type: count_distinct
-    sql: ${TABLE}."POST_ID" ;;
+    sql: ${post_id} ;;
     filters: {
       field: created_date
       value: "30 days"
@@ -595,7 +685,7 @@ view: social_performance {
 
   measure: count_distinct_posts_twitter_current_month {
     type: count_distinct
-    sql: ${TABLE}."POST_ID" ;;
+    sql: ${post_id} ;;
     filters: {
       field: created_date
       value: "30 days"
@@ -608,7 +698,7 @@ view: social_performance {
 
   measure: count_distinct_posts_twitter_previous_month {
     type: count_distinct
-    sql: ${TABLE}."POST_ID" ;;
+    sql: ${post_id} ;;
     filters: {
       field: created_date
       value: "60 days ago for 30 days"
@@ -627,7 +717,7 @@ view: social_performance {
 
   measure: count_distinct_posts_instagram_current_month {
     type: count_distinct
-    sql: ${TABLE}."POST_ID" ;;
+    sql: ${post_id} ;;
     filters: {
       field: created_date
       value: "30 days"
@@ -640,7 +730,7 @@ view: social_performance {
 
   measure: count_distinct_posts_instagram_previous_month {
     type: count_distinct
-    sql: ${TABLE}."POST_ID" ;;
+    sql: ${post_id} ;;
     filters: {
       field: created_date
       value: "60 days ago for 30 days"
@@ -659,7 +749,7 @@ view: social_performance {
 
   measure: count_distinct_posts_previous_month {
     type: count_distinct
-    sql: ${TABLE}."POST_ID" ;;
+    sql: ${post_id} ;;
     filters: {
       field: created_date
       value: "60 days ago for 30 days"
