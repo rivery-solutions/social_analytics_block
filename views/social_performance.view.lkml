@@ -3,30 +3,93 @@ view: social_performance {
   sql_table_name: "DWH"."FACT_SOCIAL"
     ;;
 
-# Dimensions
+# Parameters and corresponding dimensions
+
+# This parameter is used to allow the user to toggle between different timeframe granularities
+  parameter: timeframe_filter {
+    view_label: "Parameter Fields"
+    allowed_value: { value: "Day" }
+    allowed_value: { value: "Week" }
+    allowed_value: { value: "Month" }
+    default_value: "Week"
+  }
+
+# References the 'timeframe_filter' parameter above. When 'timeframe_filter' is applied, use this dimension to show the corresponding date granularity.
+  dimension: timeframe {
+    view_label: "Parameter Fields"
+    sql: CASE
+          WHEN {% parameter timeframe_filter %} = 'Day' THEN ${date_date}::varchar
+          WHEN {% parameter timeframe_filter %} = 'Week' THEN ${date_week}
+          WHEN {% parameter timeframe_filter %} = 'Month' THEN ${date_month}
+        END ;;
+    label_from_parameter: timeframe_filter
+  }
+
+  dimension: timeframe_day_number {
+    view_label: "Parameter Fields"
+    type: number
+    sql: CASE
+    WHEN {% parameter timeframe_filter %} = 'Day' THEN 1
+    WHEN {% parameter timeframe_filter %} = 'Week' THEN 7
+    WHEN {% parameter timeframe_filter %} = 'Month' THEN 30
+    END ;;
+  }
+
+  parameter: post_interval_selector {
+    view_label: "Parameter Fields"
+    allowed_value: {
+      label:"5"
+      value: "5"
+    }
+    allowed_value: {
+      label:"10"
+      value: "10"
+      }
+    allowed_value: {
+      label:"20"
+      value: "20"
+    }
+    default_value: "10"
+  }
+
+  dimension:  post_interval {
+    view_label: "Parameter Fields"
+    type: number
+    sql: CASE
+          WHEN {% parameter post_interval_selector %} = '5' THEN 5
+          WHEN {% parameter post_interval_selector %} = '10' THEN 10
+          WHEN {% parameter post_interval_selector %} = '20' THEN 20
+          END ;;
+  }
 
   dimension: account_id {
+    view_label: "Page Fields"
     type: string
     sql: ${TABLE}."ACCOUNT_ID" ;;
   }
 
   dimension: account_name {
+    view_label: "Page Fields"
     type: string
     sql: ${TABLE}."ACCOUNT_NAME" ;;
   }
 
   dimension: channel {
+    view_label: "Page Fields"
     type: string
     sql: ${TABLE}."CHANNEL" ;;
   }
 
   dimension: comments {
     type: number
-    sql: ${TABLE}."CHANNEL" ;;
+    sql: ${TABLE}."COMMENTS" ;;
+    hidden: yes
   }
 
-  measure: total_comments {
-    type: sum
+  measure: comment_count {
+    view_label: "Post Fields"
+    type: sum_distinct
+    sql_distinct_key: ${post_id} || ${account_id};;
     sql: ${comments} ;;
   }
 
@@ -42,9 +105,11 @@ view: social_performance {
       year
     ]
     sql: ${TABLE}."CREATED_DATE" ;;
+    view_label: "Post Fields"
   }
 
   dimension_group: date {
+    view_label: "Page Fields"
     type: time
     timeframes: [
       raw,
@@ -67,17 +132,18 @@ view: social_performance {
   }
 
   measure: post_engagement {
-    type: sum
+    type: sum_distinct
+    view_label: "Post Fields"
+    sql_distinct_key: ${post_id} || ${account_id};;
     sql: ${engagement} ;;
   }
 
   measure: engagement_rate {
+    view_label: "Post Fields"
     type: number
     value_format_name: percent_2
-    sql: ${post_engagement}/${impressions} ;;
+    sql: ${post_engagement}/nullif(${post_impressions},0) ;;
   }
-
-
 
   dimension: favorite_count {
     type: number
@@ -85,37 +151,15 @@ view: social_performance {
     hidden: yes
   }
 
-  measure: page_favorite_count {
-    type: sum
+  measure: post_favorite_count {
+    view_label: "Post Fields"
+    type: sum_distinct
+    sql_distinct_key: ${post_id} || ${account_id};;
     sql: ${favorite_count} ;;
   }
-
-  measure: favorites_current_month {
-    type: sum
-    sql: ${favorite_count} ;;
-    filters: {
-      field: created_date
-      value: "30 days"
-    }
-  }
-
-  measure: favorites_previous_month {
-    type: sum
-    sql: ${favorite_count} ;;
-    filters: {
-      field: created_date
-      value: "60 days ago for 30 days"
-    }
-  }
-
-  measure: favorites_monthly_change {
-    type: number
-    value_format_name: percent_2
-    sql: (${favorites_current_month}-${favorites_previous_month})/ NULLIF(${favorites_previous_month},0) ;;
-  }
-
 
   dimension: ig_id {
+    view_label: "Post Fields"
     type: string
     sql: ${TABLE}."IG_ID" ;;
   }
@@ -127,51 +171,20 @@ view: social_performance {
   }
 
   measure: post_impressions {
-    type: sum
+    view_label: "Post Fields"
+    type: sum_distinct
+    sql_distinct_key: ${post_id} || ${account_id};;
     sql: ${impressions} ;;
   }
-
-  measure: impressions_twitter_current_month {
-    type: sum
-    sql: ${impressions} ;;
-    filters: {
-      field: channel
-      value: "Twitter"
-    }
-    filters: {
-      field: date_date
-      value: "30 days"
-    }
-  }
-
-  measure: impressions_twitter_previous_month {
-    type: sum
-    sql: ${impressions} ;;
-    filters: {
-      field: channel
-      value: "Twitter"
-    }
-    filters: {
-      field: date_date
-      value: "60 days ago for 30 days"
-    }
-  }
-
-
-  measure: impressions_twitter_monthly_change {
-    type: number
-    value_format_name: percent_2
-    sql: (${impressions_twitter_current_month}-${impressions_twitter_previous_month})
-      / NULLIF(${impressions_twitter_previous_month},0) ;;
-  }
-
 
   dimension: is_hidden {
+    view_label: "Post Fields"
     type: yesno
     sql: ${TABLE}."IS_HIDDEN" ;;
   }
 
   dimension: is_published {
+    view_label: "Post Fields"
     type: yesno
     sql: ${TABLE}."IS_PUBLISHED" ;;
   }
@@ -179,45 +192,70 @@ view: social_performance {
   dimension: likes {
     type: number
     sql: ${TABLE}."LIKES" ;;
+    hidden: yes
+  }
+
+  measure: like_count {
+    view_label: "Post Fields"
+    type: sum_distinct
+    sql_distinct_key:${post_id} || ${account_id} ;;
+    sql: ${likes} ;;
   }
 
   dimension: link_clicks {
     type: number
     sql: ${TABLE}."LINK_CLICKS" ;;
+    hidden: yes
+  }
+
+  measure: facebook_link_clicks {
+    view_label: "Post Fields"
+    type: sum_distinct
+    sql_distinct_key: ${post_id} || ${account_id}  ;;
+    sql: ${link_clicks} ;;
   }
 
   dimension: media_type {
+    view_label: "Post Fields"
     type: string
     sql: ${TABLE}."MEDIA_TYPE" ;;
   }
 
   dimension: media_url {
+    view_label: "Post Fields"
     type: string
     sql: ${TABLE}."MEDIA_URL" ;;
-  }
-
-  dimension: message {
-    type: string
-    sql: ${TABLE}."MESSAGE" ;;
   }
 
   dimension: other_clicks {
     type: number
     sql: ${TABLE}."OTHER_CLICKS" ;;
+    hidden: yes
+  }
+
+  measure: facebook_other_clicks {
+    view_label: "Post Fields"
+    type: sum_distinct
+    sql_distinct_key: ${post_id} || ${account_id}  ;;
+    sql: ${other_clicks} ;;
   }
 
   dimension: owner_id {
+    view_label: "Post Fields"
+    hidden: yes
     type: number
     sql: ${TABLE}."OWNER_ID" ;;
   }
 
   dimension: page_consumptions {
+    view_label: "Page Fields"
     type: number
     sql: ${TABLE}."PAGE_CONSUMPTIONS" ;;
     hidden: yes
   }
 
   measure: page_consumptions_daily {
+    view_label: "Page Fields"
     type: sum_distinct
     sql_distinct_key: ${account_id} || ${date_date};;
     sql: ${page_consumptions} ;;
@@ -230,59 +268,25 @@ view: social_performance {
   }
 
   measure: page_engaged_users_daily {
+    view_label: "Page Fields"
     type: sum_distinct
     sql_distinct_key: ${account_id} || ${date_date};;
     sql: ${page_engaged_users} ;;
   }
 
-  measure: page_engaged_users_current_month {
-    type: sum_distinct
-    sql_distinct_key: ${account_id} || ${date_date};;
+  measure: page_engaged_users_avg {
+    view_label: "Page Fields"
+    value_format: "0.00"
+    type: average_distinct
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_engaged_users} ;;
-    filters: {
-      field: date_date
-      value: "30 days"
-    }
-  }
-
-  measure: page_engaged_users_previous_month {
-    type: sum_distinct
-    sql_distinct_key: ${account_id} || ${date_date};;
-    sql: ${page_engaged_users} ;;
-    filters: {
-      field: date_date
-      value: "60 days ago for 30 days"
-    }
-  }
-
-  measure: page_engaged_users_monthly_change {
-    type: number
-    value_format_name: percent_2
-    sql: (${page_engaged_users_current_month}-${page_engaged_users_previous_month})
-    / NULLIF(${page_engaged_users_previous_month},0) ;;
   }
 
   measure: page_engagement_rate {
+    view_label: "Page Fields"
     type: number
     value_format_name: percent_2
     sql:${page_engaged_users}/nullif(${page_impressions},0) ;;
-  }
-
-  measure: page_engagement_rate_current_month {
-    type: number
-    value_format_name: percent_2
-    sql:${page_engaged_users_current_month}/nullif(${page_impressions_current_month},0);;
-  }
-
-  measure: page_engagement_rate_previous_month {
-    type: number
-    value_format_name: percent_2
-    sql:${page_engaged_users_previous_month}/nullif(${page_impressions_previous_month},0);;
-  }
-
-  measure: page_engagement_rate_monthly_change {
-    type:  number
-    sql: ${page_engagement_rate_current_month} - ${page_engagement_rate_previous_month} ;;
   }
 
   dimension: page_fan_adds {
@@ -292,6 +296,7 @@ view: social_performance {
   }
 
   measure: page_fan_adds_daily {
+    view_label: "Page Fields"
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_fan_adds} ;;
@@ -304,6 +309,7 @@ view: social_performance {
   }
 
   measure: page_fan_count_daily {
+    view_label: "Page Fields"
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_fan_count} ;;
@@ -316,39 +322,15 @@ view: social_performance {
     hidden: yes
   }
 
-  measure: page_fan_count_current {
-    type: sum_distinct
-    sql_distinct_key: ${account_id}
-    sql: ${page_fan_count_today} ;;
-    filters: {
-      field: date_date
-      value: "24 hours"
-    }
-  }
-
-  measure: page_fan_count_previous_month {
-    type: sum_distinct
-    sql_distinct_key: ${account_id}|| ${date_date} ;;
-    sql: ${page_fan_count} ;;
-    filters: {
-      field: date_date
-      value: "1 month ago for 1 day"
-    }
-  }
-
-  measure: page_fan_monthly_change {
-    type: number
-    value_format_name: percent_2
-    sql: (${page_fan_count_current}-${page_fan_count_previous_month})/ NULLIF(${page_fan_count_previous_month},0) ;;
-  }
-
   dimension: page_fan_removes {
+    view_label: "Page Fields"
     type: number
     sql: ${TABLE}."PAGE_FAN_REMOVES" ;;
     hidden: yes
   }
 
   measure: page_fan_removes_daily {
+    view_label: "Page Fields"
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_fan_removes} ;;
@@ -361,99 +343,49 @@ view: social_performance {
   }
 
   measure: page_impressions_daily {
+    view_label: "Page Fields"
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_impressions};;
   }
 
-  measure: page_impressions_facebook_current_month {
+  measure: page_impressions_avg {
+    view_label: "Page Fields"
+    value_format: "0.00"
+    type: average_distinct
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_impressions} ;;
+  }
+
+  measure: page_impressions_current_30 {
     type: sum_distinct
+    view_label: "Time Comparison Fields"
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_impressions};;
-    filters: {
-      field: channel
-      value: "Facebook"
-    }
     filters: {
       field: date_date
       value: "30 days"
     }
   }
 
-  measure: page_impressions_facebook_previous_month {
+  measure: page_impressions_previous_30 {
     type: sum_distinct
+    view_label: "Time Comparison Fields"
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_impressions};;
-    filters: {
-      field: channel
-      value: "Facebook"
-    }
     filters: {
       field: date_date
       value: "60 days ago for 30 days"
     }
   }
 
-  measure: page_impressions_facebook_monthly_change {
+  measure: page_impressions_percent_change {
     type: number
+    view_label: "Time Comparison Fields"
     value_format_name: percent_2
-    sql: (${page_impressions_facebook_current_month}-${page_impressions_facebook_previous_month})/ NULLIF(${page_impressions_facebook_previous_month},0) ;;
+    sql: (${page_impressions_current_30}-${page_impressions_previous_30})/ NULLIF(${page_impressions_previous_30},0) ;;
   }
 
-  measure: page_impressions_instagram_current_month {
-    type: sum_distinct
-    sql_distinct_key: ${account_id}|| ${date_date} ;;
-    sql: ${page_impressions};;
-    filters: {
-      field: channel
-      value: "Instagram"
-    }
-    filters: {
-      field: date_date
-      value: "30 days"
-    }
-  }
-
-
-  measure: page_impressions_instagram_previous_month {
-    type: sum_distinct
-    sql_distinct_key: ${account_id}|| ${date_date} ;;
-    sql: ${page_impressions};;
-    filters: {
-      field: channel
-      value: "Instagram"
-    }
-    filters: {
-      field: date_date
-      value: "60 days ago for 30 days"
-    }
-  }
-
-  measure: page_impressions_instagram_monthly_change {
-    type: number
-    value_format_name: percent_2
-    sql: (${page_impressions_instagram_current_month}-${page_impressions_instagram_previous_month})/ NULLIF(${page_impressions_instagram_previous_month},0) ;;
-  }
-
-  measure: page_impressions_current_month {
-    type: sum_distinct
-    sql_distinct_key: ${account_id}|| ${date_date} ;;
-    sql: ${page_impressions};;
-    filters: {
-      field: date_date
-      value: "30 days"
-    }
-  }
-
-  measure: page_impressions_previous_month {
-    type: sum_distinct
-    sql_distinct_key: ${account_id}|| ${date_date} ;;
-    sql: ${page_impressions};;
-    filters: {
-      field: date_date
-      value: "60 days ago for 30 days"
-    }
-  }
 
   dimension: page_reach {
     type: number
@@ -462,77 +394,48 @@ view: social_performance {
   }
 
   measure: page_reach_daily {
+    view_label: "Page Fields"
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_reach} ;;
   }
 
-  measure: page_reach_instagram_current_month {
-    type: sum_distinct
+  measure: page_reach_avg {
+    view_label: "Page Fields"
+    value_format: "0.00"
+    type: average_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_reach} ;;
-    filters: {
-      field: channel
-      value: "Instagram"
-    }
+  }
+
+
+  measure: page_reach_current_30 {
+    type: sum_distinct
+    view_label: "Time Comparison Fields"
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
+    sql: ${page_reach} ;;
     filters: {
       field: date_date
       value: "30 days"
     }
   }
 
-  measure: page_reach_instagram_previous_month {
+  measure: page_reach_previous_30 {
     type: sum_distinct
+    view_label: "Time Comparison Fields"
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_reach} ;;
-    filters: {
-      field: channel
-      value: "Instagram"
-    }
     filters: {
       field: date_date
       value: "60 days ago for 30 days"
     }
   }
 
-  measure: page_reach_instagram_monthly_change {
+  measure: page_reach_percent_change {
     type: number
+    view_label: "Time Comparison Fields"
     value_format_name: percent_2
-    sql: (${page_reach_instagram_current_month}-${page_reach_instagram_previous_month})/ NULLIF(${page_reach_instagram_previous_month},0) ;;
-  }
-
-  measure: page_reach_facebook_current_month {
-    type: sum_distinct
-    sql_distinct_key: ${account_id}|| ${date_date} ;;
-    sql: ${page_reach} ;;
-    filters: {
-      field: channel
-      value: "Facebook"
-    }
-    filters: {
-      field: date_date
-      value: "30 days"
-    }
-  }
-
-  measure: page_reach_facebook_previous_month {
-    type: sum_distinct
-    sql_distinct_key: ${account_id}|| ${date_date} ;;
-    sql: ${page_reach} ;;
-    filters: {
-      field: channel
-      value: "Facebook"
-    }
-    filters: {
-      field: date_date
-      value: "60 days ago for 30 days"
-    }
-  }
-
-  measure: page_reach_facebook_monthly_change {
-    type: number
-    value_format_name: percent_2
-    sql: (${page_reach_facebook_current_month}-${page_reach_facebook_previous_month})/ NULLIF(${page_reach_facebook_previous_month},0) ;;
+    sql: (${page_reach_current_30}-${page_reach_previous_30})/ NULLIF(${page_reach_previous_30},0) ;;
   }
 
   dimension: page_views{
@@ -542,24 +445,33 @@ view: social_performance {
   }
 
   measure: page_views_daily {
+    view_label: "Page Fields"
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_views} ;;
   }
 
   dimension: permalink {
+    view_label: "Post Fields"
     type: string
     sql: ${TABLE}."PERMALINK" ;;
   }
 
-
-
   dimension: photo_view {
     type: number
     sql: ${TABLE}."PHOTO_VIEW" ;;
+    hidden: yes
+  }
+
+  measure: facebook_photo_views {
+    view_label: "Post Fields"
+    type: sum_distinct
+    sql_distinct_key: ${post_id} || ${account_id}  ;;
+    sql: ${photo_view} ;;
   }
 
   dimension: post_id {
+    view_label: "Post Fields"
     type: string
     sql: ${TABLE}."POST_ID" ;;
   }
@@ -571,57 +483,55 @@ view: social_performance {
     hidden: yes
   }
 
-# only take most recent reach for each post id?
   measure: post_reach {
-    type: sum
+    view_label: "Post Fields"
+    type: sum_distinct
+    sql_distinct_key: ${post_id} || ${account_id};;
     sql: ${reach} ;;
   }
 
   dimension: retweets {
     type: number
     sql: ${TABLE}."RETWEETS" ;;
+    hidden: yes
   }
 
-  measure: retweets_current_month {
-    type: sum
-    sql: ${retweets} ;;
-    filters: {
-      field: created_date
-      value: "30 days"
-    }
+  measure: retweet_count {
+    view_label: "Post Fields"
+    type: sum_distinct
+    sql_distinct_key: ${post_id} || ${account_id};;
+    sql: ${TABLE}."RETWEETS" ;;
   }
 
-  measure: retweets_previous_month {
-    type: sum
-    sql: ${retweets} ;;
-    filters: {
-      field: created_date
-      value: "60 days ago for 30 days"
-    }
-  }
-
-  measure: retweets_monthly_change {
-    type: number
-    value_format_name: percent_2
-    sql: (${retweets_current_month}-${retweets_previous_month})/ NULLIF(${retweets_previous_month},0) ;;
-  }
 
   dimension: saved {
     type: number
     sql: ${TABLE}."SAVED" ;;
+    hidden: yes
+  }
+
+  measure: saved_count {
+    view_label: "Post Fields"
+    type: sum_distinct
+    sql_distinct_key: ${post_id} || ${account_id};;
+    sql: ${saved} ;;
   }
 
   dimension: shares {
     type: number
     sql: ${TABLE}."SHARES" ;;
+    hidden: yes
   }
 
-  dimension: status_type {
-    type: string
-    sql: ${TABLE}."STATUS_TYPE" ;;
+  measure: share_count {
+    view_label: "Post Fields"
+    type: sum_distinct
+    sql_distinct_key: ${post_id} || ${account_id};;
+    sql: ${shares} ;;
   }
 
   dimension: title_caption {
+    view_label: "Post Fields"
     type: string
     sql: ${TABLE}."TITLE_CAPTION" ;;
   }
@@ -632,49 +542,49 @@ view: social_performance {
     hidden: yes
   }
 
-  measure: total_followers_today {
+  measure: total_followers_daily {
+    view_label: "Page Fields"
     type: sum_distinct
-    sql_distinct_key: ${account_id}
+    sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${total_followers} ;;
-    filters: {
-      field: date_date
-      value: "1 day ago"}
   }
 
-  #Instagram API will only pull followers at time of pull. This will have to run with daily
-  #inserts so that historical follow counts can be tracked.
-
-  measure: total_followers_previous_month {
-    type: sum_distinct
-    sql_distinct_key: ${account_id}
-    sql: ${total_followers} ;;
-    filters: {
-      field: date_date
-      value: "1 month ago for 1 day"}
-  }
-
-  measure: total_followers_monthly_change {
+  dimension: video_play_clicks {
     type: number
-    value_format_name: percent_2
-    sql: (${total_followers_today}-${total_followers_previous_month})/ NULLIF(${total_followers_previous_month},0) ;;
+    sql: ${TABLE}."VIDEO_PLAY_CLICKS" ;;
+    hidden: yes
   }
+
+  measure: facebook_video_play_clicks {
+    type: sum_distinct
+    view_label: "Post Fields"
+    sql_distinct_key: ${post_id} || ${account_id};;
+    sql: ${video_play_clicks} ;;
+  }
+
 
   dimension: video_views {
     type: number
     sql: ${TABLE}."VIDEO_VIEWS" ;;
+    hidden: yes
   }
 
-  measure: count {
-    type: count
-    drill_fields: [account_name]
+  measure: video_view_count {
+    view_label: "Post Fields"
+    type: sum
+    sql_distinct_key: ${post_id} || ${account_id};;
+    sql: ${video_views} ;;
+
   }
 
   measure: count_distinct_posts {
+    view_label: "Page Fields"
     type: count_distinct
     sql: ${post_id} ;;
   }
 
   measure: count_distinct_posts_current_month {
+    view_label: "Time Comparison Fields"
     type: count_distinct
     sql: ${post_id} ;;
     filters: {
@@ -683,72 +593,10 @@ view: social_performance {
     }
   }
 
-  measure: count_distinct_posts_twitter_current_month {
-    type: count_distinct
-    sql: ${post_id} ;;
-    filters: {
-      field: created_date
-      value: "30 days"
-    }
-    filters: {
-      field: channel
-      value: "Twitter"
-    }
-  }
-
-  measure: count_distinct_posts_twitter_previous_month {
-    type: count_distinct
-    sql: ${post_id} ;;
-    filters: {
-      field: created_date
-      value: "60 days ago for 30 days"
-    }
-    filters: {
-      field: channel
-      value: "Twitter"
-    }
-  }
-
-  measure: count_distinct_posts_twitter_monthly_change {
-    type: number
-    value_format_name: percent_2
-    sql: (${count_distinct_posts_twitter_current_month}-${count_distinct_posts_twitter_previous_month})/ NULLIF(${count_distinct_posts_twitter_previous_month},0) ;;
-  }
-
-  measure: count_distinct_posts_instagram_current_month {
-    type: count_distinct
-    sql: ${post_id} ;;
-    filters: {
-      field: created_date
-      value: "30 days"
-    }
-    filters: {
-      field: channel
-      value: "Instagram"
-    }
-  }
-
-  measure: count_distinct_posts_instagram_previous_month {
-    type: count_distinct
-    sql: ${post_id} ;;
-    filters: {
-      field: created_date
-      value: "60 days ago for 30 days"
-    }
-    filters: {
-      field: channel
-      value: "Instagram"
-    }
-  }
-
-  measure: count_distinct_posts_instagram_monthly_change {
-    type: number
-    value_format_name: percent_2
-    sql: (${count_distinct_posts_instagram_current_month}-${count_distinct_posts_instagram_previous_month})/ NULLIF(${count_distinct_posts_instagram_previous_month},0) ;;
-  }
 
   measure: count_distinct_posts_previous_month {
     type: count_distinct
+    view_label: "Time Comparison Fields"
     sql: ${post_id} ;;
     filters: {
       field: created_date
@@ -757,21 +605,11 @@ view: social_performance {
   }
 
   measure: count_distinct_posts_monthly_change {
+    view_label: "Time Comparison Fields"
     type: number
     value_format_name: percent_2
     sql: (${count_distinct_posts_current_month}-${count_distinct_posts_previous_month})/ NULLIF(${count_distinct_posts_previous_month},0) ;;
   }
-
-# Measures
-
-  # All channels
-
-  # Facebook and Instagram
-
-  # Twitter Only
-
-
-# Sets
 
   set: dimension_drill {
     fields: [channel, account_name, media_type]
