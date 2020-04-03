@@ -1,4 +1,4 @@
-connection: "rivery_snowflake"
+connection: "bigquery"
 
 # include all the views
 include: "/views/**/*.view"
