@@ -14,6 +14,7 @@ view: social_performance {
     default_value: "Week"
   }
 
+
 # References the 'timeframe_filter' parameter above. When 'timeframe_filter' is applied, use this dimension to show the corresponding date granularity.
   dimension: timeframe {
     view_label: "Parameter Fields"
