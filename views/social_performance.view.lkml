@@ -7,6 +7,7 @@ view: social_performance {
 
 # This parameter is used to allow the user to toggle between different timeframe granularities
   parameter: timeframe_filter {
+    description: "This parameter is used to allow the user to toggle between different timeframe granularities. Use with the 'Timeframe' dimension."
     view_label: "Parameter Fields"
     allowed_value: { value: "Day" }
     allowed_value: { value: "Week" }
@@ -18,6 +19,7 @@ view: social_performance {
 # References the 'timeframe_filter' parameter above. When 'timeframe_filter' is applied, use this dimension to show the corresponding date granularity.
   dimension: timeframe {
     view_label: "Parameter Fields"
+    description: "References the 'Timeframe Filter' parameter. When 'Timeframe Filter' is applied, use this dimension to show the corresponding date granularity."
     sql: CASE
           WHEN {% parameter timeframe_filter %} = 'Day' THEN ${date_date}::varchar
           WHEN {% parameter timeframe_filter %} = 'Week' THEN ${date_week}
@@ -29,6 +31,7 @@ view: social_performance {
 #  References the 'timeframe_filter' parameter above. This is used to determine how many days to look back for certain KPI tiles.
   dimension: timeframe_day_number {
     view_label: "Parameter Fields"
+    description: "References the 'Timeframe Filter' parameter. When 'Timeframe Filter' is applied, use this dimension to show the corresponding days in the timeframe."
     type: number
     sql: CASE
     WHEN {% parameter timeframe_filter %} = 'Day' THEN 1
@@ -40,6 +43,7 @@ view: social_performance {
 # This parameter allows for users to toggle between dynamic intervals of the last N posts.
   parameter: post_interval_selector {
     view_label: "Parameter Fields"
+    description: "This parameter allows for users to toggle between dynamic intervals of the last N posts. Use this with the 'Post Interval' dimension field."
     allowed_value: {
       label:"5"
       value: "5"
@@ -79,6 +83,7 @@ view: social_performance {
   }
 
   dimension: channel {
+    description: "Social channel: Facebook, Instagram, or Twitter."
     view_label: "Page Fields"
     type: string
     sql: ${TABLE}."CHANNEL" ;;
@@ -92,6 +97,7 @@ view: social_performance {
 
   measure: comment_count {
     view_label: "Post Fields"
+    description: "Post-level comment count. For Twitter data, this includes tweet replies."
     type: sum_distinct
     sql_distinct_key: ${post_id} || ${account_id};;
     sql: ${comments} ;;
@@ -99,6 +105,7 @@ view: social_performance {
 
   dimension_group: created {
     type: time
+    description: "Create date of a post. Use when exploring metrics at the post level."
     timeframes: [
       raw,
       time,
@@ -114,6 +121,7 @@ view: social_performance {
 
   dimension_group: date {
     view_label: "Page Fields"
+    description: "Date corresponding to page or account-level insights. Use when exploring metrics at the page or account level."
     type: time
     timeframes: [
       raw,
@@ -144,6 +152,7 @@ view: social_performance {
 
   measure: engagement_rate {
     view_label: "Post Fields"
+    description: "Engagement / Impressions"
     type: number
     value_format_name: percent_2
     sql: ${post_engagement}/nullif(${post_impressions},0) ;;
@@ -157,6 +166,7 @@ view: social_performance {
 
   measure: post_favorite_count { # Twitter only
     view_label: "Post Fields"
+    description: "Tweet favorites"
     type: sum_distinct
     sql_distinct_key: ${post_id} || ${account_id};;
     sql: ${favorite_count} ;;
@@ -166,6 +176,7 @@ view: social_performance {
     view_label: "Post Fields"
     type: string
     sql: ${TABLE}."IG_ID" ;;
+    hidden: yes
   }
 
   dimension: impressions {
@@ -260,6 +271,7 @@ view: social_performance {
 
   measure: page_consumptions_daily { # Facebook only
     view_label: "Page Fields"
+    description: "Number of consumptions per page per day. Facebook only."
     type: sum_distinct
     sql_distinct_key: ${account_id} || ${date_date};;
     sql: ${page_consumptions} ;;
@@ -273,6 +285,7 @@ view: social_performance {
 
   measure: page_engaged_users_daily { # Facebook only
     view_label: "Page Fields"
+    description: "Number of engaged users per page per day. Facebook only."
     type: sum_distinct
     sql_distinct_key: ${account_id} || ${date_date};;
     sql: ${page_engaged_users} ;;
@@ -288,6 +301,7 @@ view: social_performance {
 
   measure: page_engagement_rate { # Facebook only
     view_label: "Page Fields"
+    description: "Page engaged users / Page impressions. Facebook only."
     type: number
     value_format_name: percent_2
     sql:${page_engaged_users}/nullif(${page_impressions},0) ;;
@@ -301,6 +315,7 @@ view: social_performance {
 
   measure: page_fan_adds_daily { # Facebook only
     view_label: "Page Fields"
+    description: "Number of new fans per page per day. Facebook only."
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_fan_adds} ;;
@@ -314,6 +329,7 @@ view: social_performance {
 
   measure: page_fan_count_daily { # Facebook only
     view_label: "Page Fields"
+    description: "Number of total fans per page per day. Facebook only."
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_fan_count} ;;
@@ -335,6 +351,7 @@ view: social_performance {
 
   measure: page_fan_removes_daily { # Facebook only
     view_label: "Page Fields"
+    description: "Number of removed fans per page per day. Facebook only."
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_fan_removes} ;;
@@ -348,6 +365,7 @@ view: social_performance {
 
   measure: page_impressions_daily {
     view_label: "Page Fields"
+    description: "Number of impressions per page per day. Facebook and Instagram only."
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_impressions};;
@@ -355,6 +373,7 @@ view: social_performance {
 
   measure: page_impressions_avg {
     view_label: "Page Fields"
+    description: "Average number of impressions per page per day. Facebook and Instagram only."
     value_format: "0.00"
     type: average_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
@@ -364,6 +383,7 @@ view: social_performance {
   measure: page_impressions_current_30 {
     type: sum_distinct
     view_label: "Time Comparison Fields"
+    description: "Number of impressions per page for the last 30 days. Facebook and Instagram only."
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_impressions};;
     filters: {
@@ -375,6 +395,7 @@ view: social_performance {
   measure: page_impressions_previous_30 {
     type: sum_distinct
     view_label: "Time Comparison Fields"
+    description: "Number of impressions per page for the previous 30 days. Facebook and Instagram only."
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_impressions};;
     filters: {
@@ -386,6 +407,7 @@ view: social_performance {
   measure: page_impressions_percent_change {
     type: number
     view_label: "Time Comparison Fields"
+    description: "Percent change between impression count for the last 30 days compared to the previous 30 days. Facebook and Instagram only."
     value_format_name: percent_2
     sql: (${page_impressions_current_30}-${page_impressions_previous_30})/ NULLIF(${page_impressions_previous_30},0) ;;
   }
@@ -399,6 +421,7 @@ view: social_performance {
 
   measure: page_reach_daily {
     view_label: "Page Fields"
+    description: "Number of unique impressions per page per day. Facebook and Instagram only."
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_reach} ;;
@@ -406,6 +429,7 @@ view: social_performance {
 
   measure: page_reach_avg {
     view_label: "Page Fields"
+    description: "Average number of unique impressions per page per day. Facebook and Instagram only."
     value_format: "0.00"
     type: average_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
@@ -416,6 +440,7 @@ view: social_performance {
   measure: page_reach_current_30 {
     type: sum_distinct
     view_label: "Time Comparison Fields"
+    description: "Number of unique impressions per page for the last 30 days. Facebook and Instagram only."
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_reach} ;;
     filters: {
@@ -427,6 +452,7 @@ view: social_performance {
   measure: page_reach_previous_30 {
     type: sum_distinct
     view_label: "Time Comparison Fields"
+    description: "Number of unique impressions per page for the previous 30 days. Facebook and Instagram only."
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_reach} ;;
     filters: {
@@ -438,6 +464,7 @@ view: social_performance {
   measure: page_reach_percent_change {
     type: number
     view_label: "Time Comparison Fields"
+    description: "Percent change between unique impression count for the last 30 days compared to the previous 30 days. Facebook and Instagram only."
     value_format_name: percent_2
     sql: (${page_reach_current_30}-${page_reach_previous_30})/ NULLIF(${page_reach_previous_30},0) ;;
   }
@@ -450,6 +477,7 @@ view: social_performance {
 
   measure: page_views_daily { # Facebook only
     view_label: "Page Fields"
+    description: "Number of views per page per day. Facebook only."
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_views} ;;
@@ -516,6 +544,7 @@ view: social_performance {
 
   measure: saved_count { # Instagram only
     view_label: "Post Fields"
+    description: "Instagram saves."
     type: sum_distinct
     sql_distinct_key: ${post_id} || ${account_id};;
     sql: ${saved} ;;
@@ -529,6 +558,7 @@ view: social_performance {
 
   measure: share_count {
     view_label: "Post Fields"
+    description: "Facebook shares."
     type: sum_distinct
     sql_distinct_key: ${post_id} || ${account_id};;
     sql: ${shares} ;;
@@ -536,6 +566,7 @@ view: social_performance {
 
   dimension: title_caption {
     view_label: "Post Fields"
+    description: "The main descriptive message of a post."
     type: string
     sql: ${TABLE}."TITLE_CAPTION" ;;
   }
@@ -548,6 +579,7 @@ view: social_performance {
 
   measure: total_followers_daily {
     view_label: "Page Fields"
+    description: "Follower daily totals for Instagram and Twitter accounts."
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${total_followers} ;;
