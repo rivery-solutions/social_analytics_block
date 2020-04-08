@@ -26,6 +26,7 @@ view: social_performance {
     label_from_parameter: timeframe_filter
   }
 
+#  References the 'timeframe_filter' parameter above. This is used to determine how many days to look back for certain KPI tiles.
   dimension: timeframe_day_number {
     view_label: "Parameter Fields"
     type: number
@@ -36,6 +37,7 @@ view: social_performance {
     END ;;
   }
 
+# This parameter allows for users to toggle between dynamic intervals of the last N posts.
   parameter: post_interval_selector {
     view_label: "Parameter Fields"
     allowed_value: {
@@ -53,6 +55,7 @@ view: social_performance {
     default_value: "10"
   }
 
+# References the 'post_interval' parameter. This is used to apply the lookback number in table calculations based on what the user selects from the parameter filter.
   dimension:  post_interval {
     view_label: "Parameter Fields"
     type: number
@@ -146,13 +149,13 @@ view: social_performance {
     sql: ${post_engagement}/nullif(${post_impressions},0) ;;
   }
 
-  dimension: favorite_count {
+  dimension: favorite_count { # Twitter only
     type: number
     sql: ${TABLE}."FAVORITE_COUNT" ;;
     hidden: yes
   }
 
-  measure: post_favorite_count {
+  measure: post_favorite_count { # Twitter only
     view_label: "Post Fields"
     type: sum_distinct
     sql_distinct_key: ${post_id} || ${account_id};;
@@ -178,13 +181,13 @@ view: social_performance {
     sql: ${impressions} ;;
   }
 
-  dimension: is_hidden {
+  dimension: is_hidden { # Facebook only
     view_label: "Post Fields"
     type: yesno
     sql: ${TABLE}."IS_HIDDEN" ;;
   }
 
-  dimension: is_published {
+  dimension: is_published { # Facebook only
     view_label: "Post Fields"
     type: yesno
     sql: ${TABLE}."IS_PUBLISHED" ;;
@@ -203,13 +206,13 @@ view: social_performance {
     sql: ${likes} ;;
   }
 
-  dimension: link_clicks {
+  dimension: link_clicks { # Facebook only
     type: number
     sql: ${TABLE}."LINK_CLICKS" ;;
     hidden: yes
   }
 
-  measure: facebook_link_clicks {
+  measure: facebook_link_clicks { # Facebook only
     view_label: "Post Fields"
     type: sum_distinct
     sql_distinct_key: ${post_id} || ${account_id}  ;;
@@ -228,13 +231,13 @@ view: social_performance {
     sql: ${TABLE}."MEDIA_URL" ;;
   }
 
-  dimension: other_clicks {
+  dimension: other_clicks { # Facebook only
     type: number
     sql: ${TABLE}."OTHER_CLICKS" ;;
     hidden: yes
   }
 
-  measure: facebook_other_clicks {
+  measure: facebook_other_clicks { # Facebook only
     view_label: "Post Fields"
     type: sum_distinct
     sql_distinct_key: ${post_id} || ${account_id}  ;;
@@ -248,34 +251,34 @@ view: social_performance {
     sql: ${TABLE}."OWNER_ID" ;;
   }
 
-  dimension: page_consumptions {
+  dimension: page_consumptions { # Facebook only
     view_label: "Page Fields"
     type: number
     sql: ${TABLE}."PAGE_CONSUMPTIONS" ;;
     hidden: yes
   }
 
-  measure: page_consumptions_daily {
+  measure: page_consumptions_daily { # Facebook only
     view_label: "Page Fields"
     type: sum_distinct
     sql_distinct_key: ${account_id} || ${date_date};;
     sql: ${page_consumptions} ;;
   }
 
-  dimension: page_engaged_users {
+  dimension: page_engaged_users { # Facebook only
     type: number
     sql: ${TABLE}."PAGE_ENGAGED_USERS" ;;
     hidden: yes
   }
 
-  measure: page_engaged_users_daily {
+  measure: page_engaged_users_daily { # Facebook only
     view_label: "Page Fields"
     type: sum_distinct
     sql_distinct_key: ${account_id} || ${date_date};;
     sql: ${page_engaged_users} ;;
   }
 
-  measure: page_engaged_users_avg {
+  measure: page_engaged_users_avg { # Facebook only
     view_label: "Page Fields"
     value_format: "0.00"
     type: average_distinct
@@ -283,33 +286,33 @@ view: social_performance {
     sql: ${page_engaged_users} ;;
   }
 
-  measure: page_engagement_rate {
+  measure: page_engagement_rate { # Facebook only
     view_label: "Page Fields"
     type: number
     value_format_name: percent_2
     sql:${page_engaged_users}/nullif(${page_impressions},0) ;;
   }
 
-  dimension: page_fan_adds {
+  dimension: page_fan_adds { # Facebook only
     type: number
     sql: ${TABLE}."PAGE_FAN_ADDS" ;;
     hidden: yes
   }
 
-  measure: page_fan_adds_daily {
+  measure: page_fan_adds_daily { # Facebook only
     view_label: "Page Fields"
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_fan_adds} ;;
   }
 
-  dimension: page_fan_count {
+  dimension: page_fan_count { # Facebook only
     type: number
     sql:  ${TABLE}."PAGE_FAN_COUNT" ;;
     hidden: yes
   }
 
-  measure: page_fan_count_daily {
+  measure: page_fan_count_daily { # Facebook only
     view_label: "Page Fields"
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
@@ -317,20 +320,20 @@ view: social_performance {
   }
 
 
-  dimension: page_fan_count_today {
+  dimension: page_fan_count_today { # Facebook only
     type:  number
     sql: ${TABLE}."PAGE_FAN_COUNT_TODAY" ;;
     hidden: yes
   }
 
-  dimension: page_fan_removes {
+  dimension: page_fan_removes { # Facebook only
     view_label: "Page Fields"
     type: number
     sql: ${TABLE}."PAGE_FAN_REMOVES" ;;
     hidden: yes
   }
 
-  measure: page_fan_removes_daily {
+  measure: page_fan_removes_daily { # Facebook only
     view_label: "Page Fields"
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
@@ -439,13 +442,13 @@ view: social_performance {
     sql: (${page_reach_current_30}-${page_reach_previous_30})/ NULLIF(${page_reach_previous_30},0) ;;
   }
 
-  dimension: page_views{
+  dimension: page_views{ # Facebook only
     type: number
     sql: ${TABLE}."PAGE_VIEWS" ;;
     hidden: yes
   }
 
-  measure: page_views_daily {
+  measure: page_views_daily { # Facebook only
     view_label: "Page Fields"
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
@@ -458,13 +461,13 @@ view: social_performance {
     sql: ${TABLE}."PERMALINK" ;;
   }
 
-  dimension: photo_view {
+  dimension: photo_view { # Facebook only
     type: number
     sql: ${TABLE}."PHOTO_VIEW" ;;
     hidden: yes
   }
 
-  measure: facebook_photo_views {
+  measure: facebook_photo_views { # Facebook only
     view_label: "Post Fields"
     type: sum_distinct
     sql_distinct_key: ${post_id} || ${account_id}  ;;
@@ -491,13 +494,13 @@ view: social_performance {
     sql: ${reach} ;;
   }
 
-  dimension: retweets {
+  dimension: retweets { # Twitter only
     type: number
     sql: ${TABLE}."RETWEETS" ;;
     hidden: yes
   }
 
-  measure: retweet_count {
+  measure: retweet_count { # Twitter only
     view_label: "Post Fields"
     type: sum_distinct
     sql_distinct_key: ${post_id} || ${account_id};;
@@ -505,13 +508,13 @@ view: social_performance {
   }
 
 
-  dimension: saved {
+  dimension: saved { # Instagram only
     type: number
     sql: ${TABLE}."SAVED" ;;
     hidden: yes
   }
 
-  measure: saved_count {
+  measure: saved_count { # Instagram only
     view_label: "Post Fields"
     type: sum_distinct
     sql_distinct_key: ${post_id} || ${account_id};;
@@ -550,13 +553,13 @@ view: social_performance {
     sql: ${total_followers} ;;
   }
 
-  dimension: video_play_clicks {
+  dimension: video_play_clicks { # Facebook only
     type: number
     sql: ${TABLE}."VIDEO_PLAY_CLICKS" ;;
     hidden: yes
   }
 
-  measure: facebook_video_play_clicks {
+  measure: facebook_video_play_clicks { # Facebook only
     type: sum_distinct
     view_label: "Post Fields"
     sql_distinct_key: ${post_id} || ${account_id};;

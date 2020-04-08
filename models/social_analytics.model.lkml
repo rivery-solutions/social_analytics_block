@@ -1,7 +1,8 @@
-connection: "bigquery"
+connection: "rivery_snowflake"
 
 # include all the views
 include: "/views/**/*.view"
+include: "/dashboards/**/*.dashboard"
 
 datagroup: social_analytics_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;

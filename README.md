@@ -13,8 +13,13 @@ Instructions on how to implement this block can be found [here] (link here}.
 
 ### What’s in the Block?
 
-*Dashboards*
-
-Social Analytics: Performance Overview
-
-Social Analytics: Post Details
+- **Social Analytics: Overview**
+  - Analyze KPIs and trends for key engagement metrics across social platforms
+  - Toggle between date period to track percent change in key engagement metrics
+  - Compare growth between different social platforms
+- **Social Analytics: Tweet Performance**
+  - Analyze twitter-specific engagement metrics between groups of tweets
+  - Dynamically toggle tweet bucket sizes
+  - Tweet performance at the post level
+- **Social Analytics: All Channel Post Performance**
+  - One centralized view of post performance, across all channels and accounts
