@@ -8,7 +8,9 @@ This block brings all of your Facebook, Instagram, and Twitter social media perf
 
 ### How do I implement the block?
 
-Instructions on how to implement this block can be found [here](https://rivery.io/docs/social-analytics-for-looker).
+You can request a Rivery account for Social Analytics [here](https://rivery.io/feed-your-social-analytics-data-into-looker).
+
+Once you have initiated your Rivery account, instructions on how to implement this block can be found [here](https://rivery.io/docs/social-analytics-for-looker).
 
 
 ### What’s in the Block?
