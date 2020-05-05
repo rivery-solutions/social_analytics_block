@@ -146,6 +146,7 @@ view: social_performance {
   measure: post_engagement {
     type: sum_distinct
     view_label: "Post Fields"
+    drill_fields: [dimension_drill*]
     sql_distinct_key: ${post_id} || ${account_id};;
     sql: ${engagement} ;;
   }
@@ -385,6 +386,7 @@ view: social_performance {
     view_label: "Time Comparison Fields"
     description: "Number of impressions per page for the last 30 days. Facebook and Instagram only."
     sql_distinct_key: ${account_id}|| ${date_date} ;;
+    drill_fields: [date_drill*]
     sql: ${page_impressions};;
     filters: {
       field: date_date
@@ -397,6 +399,7 @@ view: social_performance {
     view_label: "Time Comparison Fields"
     description: "Number of impressions per page for the previous 30 days. Facebook and Instagram only."
     sql_distinct_key: ${account_id}|| ${date_date} ;;
+    drill_fields: [date_drill*]
     sql: ${page_impressions};;
     filters: {
       field: date_date
@@ -508,6 +511,17 @@ view: social_performance {
     sql: ${TABLE}."POST_ID" ;;
   }
 
+  dimension: post_description {
+    view_label: "Post Fields"
+    type: string
+    sql: ${TABLE}."POST_DESCRIPTION" ;;
+  }
+
+  dimension: post_title {
+    view_label: "Post Fields"
+    type: string
+    sql: ${TABLE}."POST_TITLE" ;;
+  }
 
   dimension: reach {
     type: number
@@ -649,6 +663,15 @@ view: social_performance {
 
   set: dimension_drill {
     fields: [channel, account_name, media_type]
+  }
+
+  set: date_drill {
+    fields: [date_year, date_month, date_date]
+  }
+
+
+  set: detail_drill {
+    fields: [channel, account_name, media_type, date_date, title_caption]
   }
 
 
