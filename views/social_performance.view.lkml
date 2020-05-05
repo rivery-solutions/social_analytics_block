@@ -331,6 +331,7 @@ view: social_performance {
   measure: page_fan_count_daily { # Facebook only
     view_label: "Page Fields"
     description: "Number of total fans per page per day. Facebook only."
+    drill_fields: [page_fans_drill*]
     type: sum_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_fan_count} ;;
@@ -672,6 +673,10 @@ view: social_performance {
 
   set: detail_drill {
     fields: [channel, account_name, media_type, date_date, title_caption]
+  }
+
+  set: page_fans_drill {
+    fields: [date_drill*, page_fan_adds_daily, page_fan_removes_daily]
   }
 
 
