@@ -377,6 +377,7 @@ view: social_performance {
     view_label: "Page Fields"
     description: "Average number of impressions per page per day. Facebook and Instagram only."
     value_format: "0.00"
+    drill_fields: [account_name, created_date, title_caption, post_impressions, post_reach]
     type: average_distinct
     sql_distinct_key: ${account_id}|| ${date_date} ;;
     sql: ${page_impressions} ;;
