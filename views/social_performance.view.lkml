@@ -205,6 +205,12 @@ view: social_performance {
     sql: ${TABLE}."IS_PUBLISHED" ;;
   }
 
+  dimension: is_published_test { # Facebook only
+    view_label: "Post Fields"
+    type: yesno
+    sql: ${TABLE}."IS_PUBLISHED" ;;
+  }
+
   dimension: likes {
     type: number
     sql: ${TABLE}."LIKES" ;;
